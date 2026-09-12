@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill History | Grand Royal Hotel POS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar-custom">
+        <div class="container-fluid px-lg-4 d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-wrapper">
+                <div class="brand-icon">
+                    <i class="bi bi-fire"></i>
+                </div>
+                <div>
+                    <div class="brand-title">GRAND ROYAL HOTEL</div>
+                    <div class="brand-subtitle">RESTAURANT & FOOD BILLING SYSTEM</div>
+                </div>
+            </a>
+
+            <nav class="d-none d-md-flex align-items-center gap-1">
+                <a href="/" class="nav-link-custom">
+                    <i class="bi bi-grid-fill"></i> Food Menu
+                </a>
+                <a href="/create-order" class="nav-link-custom">
+                    <i class="bi bi-plus-circle-fill"></i> New Order
+                </a>
+                <a href="/bill-history" class="nav-link-custom active">
+                    <i class="bi bi-clock-history"></i> Bill History
+                </a>
+                <a href="/dashboard" class="nav-link-custom">
+                    <i class="bi bi-graph-up-arrow"></i> Dashboard
+                </a>
+            </nav>
+
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-badge d-none d-sm-flex">
+                    <i class="bi bi-person-circle text-secondary"></i>
+                    <span class="fw-bold">{{ session.get('full_name', 'Staff') }}</span>
+                    <span class="role-pill {{ 'role-admin' if session.get('role') == 'admin' else 'role-staff' }}">
+                        {{ session.get('role', 'staff') }}
+                    </span>
+                </div>
+                <a href="/logout" class="btn btn-sm btn-outline-secondary" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-fluid px-lg-4 py-4">
+        
+        <!-- Top Title & Action Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Generated Invoices & Bill History</h3>
+                <p class="text-muted small mb-0">Search, review, reprint, or audit all restaurant dining receipts from MySQL database</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print Table
+                </button>
+                <a href="/" class="btn btn-danger d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-plus-circle"></i> Create New Bill
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="bg-white p-3 rounded-3 border mb-4 shadow-sm">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label small fw-bold text-secondary">Search Invoices</label>
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" id="billSearchInput" class="form-control" placeholder="Search by Bill #, Customer name, or Table...">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-secondary">Filter by Date</label>
+                    <input type="date" id="billDateInput" class="form-control">
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="button" id="btnFilterBills" class="btn btn-danger flex-grow-1">
+                        <i class="bi bi-funnel"></i> Apply
+                    </button>
+                    <button type="button" id="btnResetFilters" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Table Card -->
+        <div class="bg-white rounded-3 border shadow-sm p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="billsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Bill #</th>
+                            <th scope="col">Customer & Table</th>
+                            <th scope="col">Ordered Dishes</th>
+                            <th scope="col">Grand Total</th>
+                            <th scope="col">Payment</th>
+                            <th scope="col">Date & Time</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billsTbody">
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-danger me-2"></div>
+                                Fetching records from database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for Quick Bill View -->
+    <div class="modal fade" id="viewBillModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" id="modalBillContent">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const userRole = "{{ session.get('role', 'staff') }}";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBills();
+
+            document.getElementById('btnFilterBills').addEventListener('click', () => {
+                loadBills();
+            });
+
+            document.getElementById('btnResetFilters').addEventListener('click', () => {
+                document.getElementById('billSearchInput').value = '';
+                document.getElementById('billDateInput').value = '';
+                loadBills();
+            });
+
+            document.getElementById('billSearchInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') loadBills();
+            });
+        });
+
+        async function loadBills() {
+            const search = document.getElementById('billSearchInput').value.trim();
+            const date = document.getElementById('billDateInput').value.trim();
+            const tbody = document.getElementById('billsTbody');
+
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-danger me-2"></div>Loading...</td></tr>`;
+
+            try {
+                let url = `/api/bills?search=${encodeURIComponent(search)}&date=${encodeURIComponent(date)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    renderBillsTable(data.bills || []);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error loading bills: ${data.error || 'Server error'}</td></tr>`;
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Failed to communicate with Flask backend.</td></tr>`;
+            }
+        }
+
+        function renderBillsTable(bills) {
+            const tbody = document.getElementById('billsTbody');
+            if (bills.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-inbox display-6 d-block mb-2 text-secondary-subtle"></i>No bills matched your search criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = bills.map(b => {
+                const itemsSummary = (b.items && b.items.length > 0)
+                    ? b.items.map(i => `${i.quantity}x ${i.food_name}`).join(', ')
+                    : 'Dishes';
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="badge bg-danger-subtle text-danger fs-6 fw-bold">${b.bill_number}</span>
+                            <div class="small text-muted">${b.order_number || ''}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">${b.customer_name}</div>
+                            <span class="badge bg-light text-secondary border small">${b.table_number} • ${b.order_type || 'Dine-In'}</span>
+                        </td>
+                        <td style="max-width: 250px;">
+                            <div class="text-truncate small text-secondary" title="${itemsSummary}">${itemsSummary}</div>
+                        </td>
+                        <td class="fw-bold text-dark fs-6">
+                            ₹${b.grand_total.toFixed(2)}
+                            <div class="small text-muted">GST: ₹${b.gst.toFixed(2)}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">${b.payment_method}</span>
+                        </td>
+                        <td class="small text-muted">${b.created_at}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="/bill/${b.id}" class="btn btn-outline-danger" title="Print Invoice">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" onclick="viewBillDetails(${b.id})" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                ${userRole === 'admin' ? `
+                                    <button type="button" class="btn btn-outline-danger" onclick="deleteBill(${b.id}, '${b.bill_number}')" title="Delete Bill">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function viewBillDetails(billId) {
+            try {
+                const res = await fetch(`/api/bills/${billId}`);
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const b = data.bill;
+                    const itemsHtml = (b.items || []).map(i => `
+                        <tr>
+                            <td>${i.food_name}</td>
+                            <td class="text-center">${i.quantity}</td>
+                            <td class="text-end">₹${i.price.toFixed(2)}</td>
+                            <td class="text-end fw-bold">₹${i.total.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('modalBillContent').innerHTML = `
+                        <div class="modal-header bg-dark text-white">
+                            <h5 class="modal-title"><i class="bi bi-receipt text-danger me-2"></i>Invoice Details: ${b.bill_number}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div><strong>Customer:</strong> ${b.customer_name}</div>
+                                <div><strong>Table:</strong> ${b.table_number}</div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 text-muted small">
+                                <div><strong>Type:</strong> ${b.order_type}</div>
+                                <div><strong>Date:</strong> ${b.created_at}</div>
+                            </div>
+
+                            <table class="table table-sm border">
+                                <thead class="table-light">
+                                    <tr><th>Item</th><th class="text-center">Qty</th><th class="text-end">Price</th><th class="text-end">Total</th></tr>
+                                </thead>
+                                <tbody>${itemsHtml}</tbody>
+                            </table>
+
+                            <div class="border-top pt-2">
+                                <div class="d-flex justify-content-between small"><span>Subtotal:</span><span>₹${b.subtotal.toFixed(2)}</span></div>
+                                <div class="d-flex justify-content-between small text-success"><span>Discount:</span><span>-₹${b.discount.toFixed(2)}</span></div>
+                                <div class="d-flex justify-content-between small"><span>GST (5%):</span><span>₹${b.gst.toFixed(2)}</span></div>
+                                <div class="d-flex justify-content-between fw-bold fs-5 text-danger mt-2 border-top pt-2"><span>Grand Total:</span><span>₹${b.grand_total.toFixed(2)}</span></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="/bill/${b.id}" class="btn btn-danger"><i class="bi bi-printer me-1"></i> Print Invoice</a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    `;
+                    new bootstrap.Modal(document.getElementById('viewBillModal')).show();
+                }
+            } catch (err) {
+                alert('Could not retrieve bill details.');
+            }
+        }
+
+        async function deleteBill(billId, billNum) {
+            if (!confirm(`Are you sure you want to permanently delete bill ${billNum}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/bills/${billId}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    alert(result.message);
+                    loadBills();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to delete'));
+                }
+            } catch (err) {
+                alert('Connection error with server.');
+            }
+        }
+    </script>
+</body>
+</html>

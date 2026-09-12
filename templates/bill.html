@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ bill.bill_number }} | Grand Royal Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .receipt-container {
+            font-family: 'Courier Prime', Courier, monospace;
+            max-width: 440px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 30px 24px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            color: #111;
+        }
+
+        .dash-line {
+            border-top: 1.5px dashed #333;
+            margin: 12px 0;
+        }
+
+        .double-line {
+            border-top: 2px solid #111;
+            border-bottom: 2px solid #111;
+            padding: 8px 0;
+            margin: 12px 0;
+        }
+
+        @media print {
+            body {
+                background: transparent !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .action-bar, header, footer {
+                display: none !important;
+            }
+            .receipt-container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Action Bar (Hidden in Print) -->
+    <div class="action-bar bg-white border-bottom py-3 px-4 no-print shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i> Back to Menu
+            </a>
+
+            <div class="d-flex gap-2">
+                <a href="/bill-history" class="btn btn-outline-dark btn-sm">
+                    <i class="bi bi-clock-history"></i> Bill History
+                </a>
+                <button type="button" class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1" onclick="window.print()">
+                    <i class="bi bi-printer-fill"></i> PRINT BILL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECEIPT / INVOICE BODY -->
+    <div class="receipt-container">
+        
+        <!-- Header -->
+        <div class="text-center">
+            <div class="fs-4 fw-bold text-uppercase" style="letter-spacing: 1px;">GRAND ROYAL HOTEL</div>
+            <div class="small fw-bold text-muted">Restaurant & Food Billing System</div>
+            <div class="small text-muted">GSTIN: 33AAAAA0000A1Z5 • FSSAI: 12421001000543</div>
+            <div class="small text-muted">124, Royal Palace Road, Tamil Nadu</div>
+            <div class="small text-muted">Tel: +91 98765 43210</div>
+        </div>
+
+        <div class="dash-line"></div>
+
+        <!-- Meta Details -->
+        <div class="small">
+            <div class="d-flex justify-content-between">
+                <span><strong>Bill No:</strong> {{ bill.bill_number }}</span>
+                <span><strong>Order:</strong> {{ bill.order_number }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span><strong>Date & Time:</strong> {{ bill.created_at }}</span>
+            </div>
+            <div class="mt-1">
+                <div><strong>Customer:</strong> {{ bill.customer_name }}</div>
+                <div><strong>Table / Token:</strong> {{ bill.table_number }}</div>
+                <div><strong>Order Type:</strong> {{ bill.order_type }}</div>
+            </div>
+        </div>
+
+        <div class="dash-line"></div>
+
+        <!-- Items Table -->
+        <table class="w-100 small">
+            <thead>
+                <tr style="border-bottom: 1px dashed #333;">
+                    <th class="py-1 text-start">ITEM</th>
+                    <th class="py-1 text-center">QTY</th>
+                    <th class="py-1 text-end">PRICE</th>
+                    <th class="py-1 text-end">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in bill.order_items %}
+                <tr>
+                    <td class="py-1">{{ item.food_name }}</td>
+                    <td class="py-1 text-center">{{ item.quantity }}</td>
+                    <td class="py-1 text-end">₹{{ "%.0f"|format(item.price) }}</td>
+                    <td class="py-1 text-end">₹{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="dash-line"></div>
+
+        <!-- Calculation Summary -->
+        <div class="small">
+            <div class="d-flex justify-content-between py-1">
+                <span>Subtotal:</span>
+                <span>₹{{ "%.2f"|format(bill.subtotal) }}</span>
+            </div>
+            {% if bill.discount > 0 %}
+            <div class="d-flex justify-content-between py-1">
+                <span>Discount:</span>
+                <span>-₹{{ "%.2f"|format(bill.discount) }}</span>
+            </div>
+            {% endif %}
+            <div class="d-flex justify-content-between py-1">
+                <span>GST (5%):</span>
+                <span>₹{{ "%.2f"|format(bill.gst) }}</span>
+            </div>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="double-line">
+            <div class="d-flex justify-content-between fs-5 fw-bold">
+                <span>GRAND TOTAL:</span>
+                <span>₹{{ "%.2f"|format(bill.grand_total) }}</span>
+            </div>
+        </div>
+
+        <!-- Payment Mode & Footer -->
+        <div class="small text-center">
+            <div class="mb-2"><strong>Payment Method:</strong> {{ bill.payment_method }}</div>
+            <div class="dash-line"></div>
+            <div class="fw-bold mt-2">Thank you for dining with us!</div>
+            <div>Please visit again.</div>
+            <div class="text-muted mt-2" style="font-size: 0.72rem;">* Computer Generated Tax Invoice *</div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,705 @@
+/* =======================================================
+   GRAND ROYAL HOTEL - RESTAURANT & FOOD BILLING SYSTEM
+   Core Stylesheet (CSS3)
+   Theme: Zomato Red (#ed3340), Dark Slate, Pristine Card Surfaces
+   ======================================================= */
+
+:root {
+  --primary: #ed3340;
+  --primary-hover: #d32330;
+  --primary-light: #ffebed;
+  --secondary: #1e293b;
+  --secondary-dark: #0f172a;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg-light: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --veg-color: #16a34a;
+  --nonveg-color: #dc2626;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --radius: 12px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NAVBAR */
+.navbar-custom {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 0.75rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--primary) 0%, #b91c1c 100%);
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 10px rgba(237, 51, 64, 0.35);
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--secondary-dark);
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0.4px;
+}
+
+.nav-link-custom {
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+}
+
+.nav-link-custom:hover {
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.nav-link-custom.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+  font-weight: 700;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-color);
+}
+
+.role-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.role-admin {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.role-staff {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* CATEGORY BAR */
+.category-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px 4px 14px 4px;
+  scrollbar-width: thin;
+}
+
+.category-container::-webkit-scrollbar {
+  height: 4px;
+}
+.category-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.category-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 14px;
+  margin-right: 12px;
+  border-radius: 12px;
+  background: white;
+  border: 1.5px solid var(--border-color);
+  transition: all 0.25s ease;
+  user-select: none;
+  min-width: 80px;
+}
+
+.category-item:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-item.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(237, 51, 64, 0.3);
+}
+
+.category-item.active .category-name {
+  color: white;
+}
+
+.category-icon {
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+
+.category-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+/* SEARCH & FILTER BAR */
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  padding-left: 2.5rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-color);
+  font-size: 0.9rem;
+  height: 42px;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(237, 51, 64, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+/* FOOD CARDS */
+.food-card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.food-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: #cbd5e1;
+  transform: translateY(-3px);
+}
+
+.food-card-img-wrapper {
+  position: relative;
+  height: 165px;
+  background-color: #f1f5f9;
+  overflow: hidden;
+}
+
+.food-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.food-card:hover .food-card-img {
+  transform: scale(1.05);
+}
+
+.veg-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 3px 7px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.veg-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.veg-dot.veg {
+  background-color: var(--veg-color);
+}
+
+.veg-dot.non-veg {
+  background-color: var(--nonveg-color);
+}
+
+.rating-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fbbf24;
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.food-card-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.food-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--secondary-dark);
+  margin-bottom: 4px;
+}
+
+.food-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 33px;
+}
+
+.food-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.food-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--secondary-dark);
+}
+
+.btn-add-food {
+  background-color: white;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-add-food:hover {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(237, 51, 64, 0.35);
+}
+
+/* CURRENT ORDER PANEL */
+.order-panel {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.order-panel-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-panel-body {
+  padding: 14px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.order-items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.order-item-info {
+  flex-grow: 1;
+  padding-right: 8px;
+}
+
+.order-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--secondary-dark);
+}
+
+.order-item-price {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.order-qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-qty {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-qty:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.qty-display {
+  font-size: 0.88rem;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+
+.order-item-total {
+  font-size: 0.92rem;
+  font-weight: 700;
+  min-width: 65px;
+  text-align: right;
+  color: var(--secondary-dark);
+}
+
+.btn-remove-item {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 6px;
+  transition: color 0.15s;
+}
+
+.btn-remove-item:hover {
+  color: var(--danger);
+}
+
+/* BILLING SUMMARY */
+.billing-summary {
+  background-color: #f8fafc;
+  border-top: 1px solid var(--border-color);
+  padding: 14px 18px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.summary-row.total-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1.5px dashed #cbd5e1;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.btn-generate-bill {
+  background: linear-gradient(135deg, var(--primary) 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(237, 51, 64, 0.35);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-generate-bill:hover {
+  background: linear-gradient(135deg, #d32330 0%, #991b1b 100%);
+  transform: translateY(-1px);
+}
+
+/* STAT CARDS (DASHBOARD) */
+.stat-card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon.red {
+  background-color: #fee2e2;
+  color: var(--primary);
+}
+
+.stat-icon.green {
+  background-color: #d1fae5;
+  color: var(--success);
+}
+
+.stat-icon.blue {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.stat-icon.amber {
+  background-color: #fef3c7;
+  color: var(--accent);
+}
+
+.stat-val {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--secondary-dark);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* PRINTABLE INVOICE STYLES */
+.receipt-paper {
+  max-width: 480px;
+  margin: 20px auto;
+  background: white;
+  padding: 30px 24px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  font-family: 'Courier New', Courier, monospace;
+  color: #000;
+  border: 1px solid #cbd5e1;
+}
+
+.receipt-header {
+  text-align: center;
+  border-bottom: 2px dashed #333;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.receipt-logo-title {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.receipt-sub {
+  font-size: 0.82rem;
+}
+
+.receipt-meta {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #333;
+  padding-bottom: 8px;
+}
+
+.receipt-table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.receipt-table th {
+  border-bottom: 1px solid #333;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.receipt-table td {
+  padding: 4px 0;
+}
+
+.receipt-summary {
+  border-top: 1px dashed #333;
+  padding-top: 8px;
+  font-size: 0.88rem;
+}
+
+.receipt-grand-total {
+  border-top: 2px dashed #333;
+  border-bottom: 2px dashed #333;
+  padding: 8px 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  margin-top: 14px;
+}
+
+/* PRINT ONLY MEDIA QUERY */
+@media print {
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .no-print, .navbar-custom, .btn-print, footer, .modal {
+    display: none !important;
+  }
+  .receipt-paper {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

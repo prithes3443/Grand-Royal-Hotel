@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard | Grand Royal Hotel POS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar-custom">
+        <div class="container-fluid px-lg-4 d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-wrapper">
+                <div class="brand-icon">
+                    <i class="bi bi-fire"></i>
+                </div>
+                <div>
+                    <div class="brand-title">GRAND ROYAL HOTEL</div>
+                    <div class="brand-subtitle">RESTAURANT & FOOD BILLING SYSTEM</div>
+                </div>
+            </a>
+
+            <!-- Nav links -->
+            <nav class="d-none d-md-flex align-items-center gap-1">
+                <a href="/" class="nav-link-custom">
+                    <i class="bi bi-grid-fill"></i> Food Menu
+                </a>
+                <a href="/create-order" class="nav-link-custom">
+                    <i class="bi bi-plus-circle-fill"></i> New Order
+                </a>
+                <a href="/bill-history" class="nav-link-custom">
+                    <i class="bi bi-clock-history"></i> Bill History
+                </a>
+                <a href="/dashboard" class="nav-link-custom active">
+                    <i class="bi bi-graph-up-arrow"></i> Dashboard
+                </a>
+            </nav>
+
+            <!-- User Status & Logout -->
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-badge d-none d-sm-flex">
+                    <i class="bi bi-person-circle text-secondary"></i>
+                    <span class="fw-bold">{{ session.get('full_name', 'Staff') }}</span>
+                    <span class="role-pill {{ 'role-admin' if session.get('role') == 'admin' else 'role-staff' }}">
+                        {{ session.get('role', 'staff') }}
+                    </span>
+                </div>
+                <a href="/logout" class="btn btn-sm btn-outline-secondary" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- DASHBOARD CONTAINER -->
+    <main class="container-fluid px-lg-4 py-4">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Executive Restaurant Dashboard</h3>
+                <p class="text-muted small mb-0">Real-time sales metrics, revenue analytics, and culinary performance from MySQL</p>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1" onclick="window.location.reload()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh Metrics
+                </button>
+            </div>
+        </div>
+
+        <!-- 4 KPI STAT CARDS -->
+        <div class="row g-3 mb-4">
+            <!-- Today's Orders -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <div>
+                        <div class="stat-val" id="statTodayOrders">0</div>
+                        <div class="stat-label">Today's Orders</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Revenue -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="bi bi-currency-rupee"></i>
+                    </div>
+                    <div>
+                        <div class="stat-val" id="statTodayRevenue">₹0.00</div>
+                        <div class="stat-label">Today's Revenue</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Orders Recorded -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-val" id="statTotalOrders">0</div>
+                        <div class="stat-label">Total Orders Recorded</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Food Revenue -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon amber">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div>
+                        <div class="stat-val" id="statTotalRevenue">₹0.00</div>
+                        <div class="stat-label">Total Food Revenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN SECTION: RECENT INVOICES + TOP SELLING DISHES -->
+        <div class="row g-4">
+            
+            <!-- Recent Food Invoices (COL-LG-8) -->
+            <div class="col-lg-8">
+                <div class="bg-white rounded-3 border p-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-receipt text-danger me-2"></i>Recent Food Invoices
+                        </h5>
+                        <a href="/bill-history" class="btn btn-sm btn-outline-secondary">View All Bills &rarr;</a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Bill #</th>
+                                    <th>Customer & Table</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentInvoicesTbody">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-danger me-2"></div>
+                                        Loading recent orders...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Selling Dishes (COL-LG-4) -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded-3 border p-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-trophy-fill text-warning me-2"></i>Top Selling Dishes
+                        </h5>
+                        <span class="badge bg-danger-subtle text-danger small">Leaderboard</span>
+                    </div>
+                    <p class="text-muted small mb-3">Dishes ranked by order volume directly from database sales history.</p>
+
+                    <div id="topDishesList">
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm text-danger me-2"></div>
+                            Loading culinary rankings...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Dashboard JS -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

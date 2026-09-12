@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Grand Royal Hotel - Restaurant POS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Login Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo-box">
+                    <i class="bi bi-cup-hot-fill"></i>
+                </div>
+                <h3 class="login-title">GRAND ROYAL HOTEL</h3>
+                <p class="login-subtitle mb-0">RESTAURANT & FOOD BILLING SYSTEM</p>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="loginAlert" class="d-none"></div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} py-2 px-3 mb-3 small d-flex align-items-center">
+                    <i class="bi bi-info-circle me-2"></i> {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form id="loginForm" method="POST" action="/login">
+                <!-- Username -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="password" class="form-label">Password</label>
+                        <a href="javascript:void(0)" onclick="alert('For demo evaluation: admin / admin123 or staff / staff123')" class="small text-decoration-none text-muted">Forgot password?</a>
+                    </div>
+                    <div class="input-group-custom">
+                        <i class="bi bi-shield-lock input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-password" id="togglePassword" title="Show/Hide Password">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                        <label class="form-check-label text-muted small" for="rememberMe">
+                            Remember my session
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="btn-login-submit">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to POS
+                </button>
+            </form>
+
+            <!-- Quick Demo Credentials for Reviewers / College Presentation -->
+            <div class="demo-credentials-box">
+                <div class="fw-bold text-dark mb-1 d-flex align-items-center">
+                    <i class="bi bi-key-fill text-warning me-1"></i> Demo Credentials (Click to Autofill):
+                </div>
+                <div class="mt-1">
+                    <strong>Admin:</strong> 
+                    <span class="cred-tag" onclick="fillCredentials('admin', 'admin123')">admin / admin123</span>
+                </div>
+                <div class="mt-1">
+                    <strong>Staff:</strong> 
+                    <span class="cred-tag" onclick="fillCredentials('staff', 'staff123')">staff / staff123</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-white-50 small mt-3">
+            &copy; 2026 Grand Royal Hotel • College Capstone Project
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Login JS -->
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

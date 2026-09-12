@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Order | Grand Royal Hotel POS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar-custom">
+        <div class="container-fluid px-lg-4 d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-wrapper">
+                <div class="brand-icon">
+                    <i class="bi bi-fire"></i>
+                </div>
+                <div>
+                    <div class="brand-title">GRAND ROYAL HOTEL</div>
+                    <div class="brand-subtitle">RESTAURANT & FOOD BILLING SYSTEM</div>
+                </div>
+            </a>
+
+            <nav class="d-none d-md-flex align-items-center gap-1">
+                <a href="/" class="nav-link-custom">
+                    <i class="bi bi-grid-fill"></i> Food Menu
+                </a>
+                <a href="/create-order" class="nav-link-custom active">
+                    <i class="bi bi-plus-circle-fill"></i> New Order
+                </a>
+                <a href="/bill-history" class="nav-link-custom">
+                    <i class="bi bi-clock-history"></i> Bill History
+                </a>
+                <a href="/dashboard" class="nav-link-custom">
+                    <i class="bi bi-graph-up-arrow"></i> Dashboard
+                </a>
+            </nav>
+
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-badge d-none d-sm-flex">
+                    <i class="bi bi-person-circle text-secondary"></i>
+                    <span class="fw-bold">{{ session.get('full_name', 'Staff') }}</span>
+                    <span class="role-pill {{ 'role-admin' if session.get('role') == 'admin' else 'role-staff' }}">
+                        {{ session.get('role', 'staff') }}
+                    </span>
+                </div>
+                <a href="/logout" class="btn btn-sm btn-outline-secondary" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT: Ordering Screen -->
+    <main class="container-fluid px-lg-4 py-3">
+        <div class="row g-3">
+            
+            <!-- Left Side: Interactive Food Catalog -->
+            <div class="col-lg-8 col-xl-8">
+                <!-- Search & Filters -->
+                <div class="bg-white p-3 rounded-3 border mb-3 shadow-sm">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <i class="bi bi-search search-icon"></i>
+                                <input type="text" id="foodSearchInput" class="form-control" placeholder="Search dishes to add...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-md-end align-items-center gap-2">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="dietFilter" id="dietAll" value="all" checked>
+                                <label class="btn btn-sm btn-outline-secondary" for="dietAll">All Dishes</label>
+
+                                <input type="radio" class="btn-check" name="dietFilter" id="dietVeg" value="Veg">
+                                <label class="btn btn-sm btn-outline-success" for="dietVeg">
+                                    <span class="veg-dot veg me-1"></span> Veg
+                                </label>
+
+                                <input type="radio" class="btn-check" name="dietFilter" id="dietNonVeg" value="Non-Veg">
+                                <label class="btn btn-sm btn-outline-danger" for="dietNonVeg">
+                                    <span class="veg-dot non-veg me-1"></span> Non-Veg
+                                </label>
+                            </div>
+                            <span id="dishesCountBadge" class="badge bg-danger-subtle text-danger border px-2 py-2 small fw-bold">
+                                38 Dishes
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Category Slider -->
+                    <div class="category-container mt-3">
+                        <div class="category-item active" data-category="All Items">
+                            <span class="category-icon">🍽️</span>
+                            <span class="category-name">All Items</span>
+                        </div>
+                        <div class="category-item" data-category="Tiffin">
+                            <span class="category-icon">🥞</span>
+                            <span class="category-name">Tiffin</span>
+                        </div>
+                        <div class="category-item" data-category="Dosa">
+                            <span class="category-icon">🥘</span>
+                            <span class="category-name">Dosa</span>
+                        </div>
+                        <div class="category-item" data-category="Biryani">
+                            <span class="category-icon">🍚</span>
+                            <span class="category-name">Biryani</span>
+                        </div>
+                        <div class="category-item" data-category="Noodles">
+                            <span class="category-icon">🍜</span>
+                            <span class="category-name">Noodles</span>
+                        </div>
+                        <div class="category-item" data-category="Parotta">
+                            <span class="category-icon">🫓</span>
+                            <span class="category-name">Parotta</span>
+                        </div>
+                        <div class="category-item" data-category="Samosa">
+                            <span class="category-icon">🥟</span>
+                            <span class="category-name">Samosa</span>
+                        </div>
+                        <div class="category-item" data-category="Starters">
+                            <span class="category-icon">🍗</span>
+                            <span class="category-name">Starters</span>
+                        </div>
+                        <div class="category-item" data-category="Main Course">
+                            <span class="category-icon">🍛</span>
+                            <span class="category-name">Main Course</span>
+                        </div>
+                        <div class="category-item" data-category="Rice">
+                            <span class="category-icon">🍲</span>
+                            <span class="category-name">Rice</span>
+                        </div>
+                        <div class="category-item" data-category="Desserts">
+                            <span class="category-icon">🍨</span>
+                            <span class="category-name">Desserts</span>
+                        </div>
+                        <div class="category-item" data-category="Drinks">
+                            <span class="category-icon">☕</span>
+                            <span class="category-name">Drinks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Food Cards Grid -->
+                <div id="foodGrid" class="row">
+                    <!-- Injected by script.js -->
+                </div>
+            </div>
+
+            <!-- Right Side: Order & Bill Panel -->
+            <div class="col-lg-4 col-xl-4">
+                <div class="order-panel">
+                    <div class="order-panel-header">
+                        <div class="order-panel-title">
+                            <i class="bi bi-cart3"></i> New Table Order
+                        </div>
+                        <span id="orderItemCount" class="badge bg-danger rounded-pill px-2 py-1">0 Items</span>
+                    </div>
+
+                    <div class="p-3 bg-light border-bottom">
+                        <div class="row g-2">
+                            <div class="col-7">
+                                <label class="small fw-bold text-secondary mb-1">Customer Name</label>
+                                <input type="text" id="customerName" class="form-control form-control-sm" placeholder="e.g. Anand" required>
+                            </div>
+                            <div class="col-5">
+                                <label class="small fw-bold text-secondary mb-1">Table / Token #</label>
+                                <input type="text" id="tableNumber" class="form-control form-control-sm" placeholder="e.g. Table 2" value="Table 2" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="small fw-bold text-secondary mb-1">Order Type</label>
+                            <div class="d-flex gap-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="orderType" id="typeDineIn" value="Dine-In" checked>
+                                    <label class="form-check-label small" for="typeDineIn">Dine-In</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="orderType" id="typeTakeaway" value="Parcel / Takeaway">
+                                    <label class="form-check-label small" for="typeTakeaway">Parcel / Takeaway</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-panel-body">
+                        <div id="orderEmptyState" class="text-center py-5 text-muted">
+                            <i class="bi bi-basket3 display-4 text-secondary-subtle"></i>
+                            <p class="mt-2 mb-1 fw-bold">No dishes in order</p>
+                            <small class="text-muted">Select dishes from the menu to build invoice.</small>
+                        </div>
+                        <ul id="orderItemsContainer" class="order-items-list"></ul>
+                    </div>
+
+                    <div id="billingSummarySection" class="billing-summary opacity-50">
+                        <div class="summary-row">
+                            <span>Food Subtotal</span>
+                            <span id="orderSubtotal" class="fw-bold text-dark">₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="d-flex align-items-center gap-1">
+                                Discount
+                                <div class="input-group input-group-sm" style="width: 75px;">
+                                    <input type="number" id="discountInput" class="form-control form-control-sm text-center py-0" value="0" min="0" max="100">
+                                    <span class="input-group-text py-0">%</span>
+                                </div>
+                            </span>
+                            <span id="orderDiscountAmt" class="text-success fw-bold">-₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>GST (5%)</span>
+                            <span id="orderGst" class="fw-bold text-dark">₹0.00</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Grand Total</span>
+                            <span id="orderGrandTotal">₹0.00</span>
+                        </div>
+
+                        <div class="my-2 pt-2 border-top">
+                            <label class="small fw-bold text-secondary d-block mb-1">Payment Method:</label>
+                            <div class="d-flex justify-content-between">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="payCash" value="Cash" checked>
+                                    <label class="form-check-label small" for="payCash">Cash</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="payCard" value="Card">
+                                    <label class="form-check-label small" for="payCard">Card</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="payUPI" value="UPI / GPay">
+                                    <label class="form-check-label small text-primary fw-bold" for="payUPI">UPI / GPay</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="button" id="btnGenerateBill" class="btn-generate-bill">
+                                <i class="bi bi-printer-fill"></i> GENERATE & PRINT BILL
+                            </button>
+                            <button type="button" id="btnClearOrder" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Clear Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/order.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
