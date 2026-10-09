@@ -1,305 +1,403 @@
 # GRAND ROYAL HOTEL
-## Restaurant & Food Ordering and Billing Management System
-### Full-Stack Python Flask & MySQL Web Application
+## Enterprise Restaurant Management, Food Billing & AI Intelligence Suite
+### Full-Stack Python Flask, MySQL, Scikit-Learn Machine Learning & Pytest Testing
+**B.Tech Artificial Intelligence & Data Science (AI&DS) Capstone Engineering Project**
+
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![Flask 3.0+](https://img.shields.io/badge/Flask-3.0%2B-black.svg)](https://flask.palletsprojects.com/)
+[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.4%2B-orange.svg)](https://scikit-learn.org/)
+[![Pytest Passed](https://img.shields.io/badge/pytest-37%20passed-brightgreen.svg)](https://pytest.org/)
+[![Security](https://img.shields.io/badge/Security-Flask--WTF%20CSRF%20Protected-red.svg)](https://flask-wtf.readthedocs.io/)
+[![Database](https://img.shields.io/badge/Database-MySQL%20%2F%20SQLite-00758F.svg)](https://www.mysql.com/)
 
 ---
 
-## 1. Project Introduction
-**Grand Royal Hotel - Restaurant & Food Ordering and Billing Management System** is a production-ready, full-stack college capstone web application designed for restaurant Point-of-Sale (POS), dine-in table ordering, parcel takeaway billing, receipt generation, and real-time revenue analytics.
+## 1. Executive Summary & Architecture Overview
 
-Built using an MVC (Model-View-Controller) architecture, the system provides separate operational privileges for **Administrators** (managing menus, viewing analytical performance, deleting bills) and **Front Desk Staff** (creating orders, calculating taxes/discounts, generating and printing invoices).
+**Grand Royal Hotel - Restaurant POS & AI Intelligence Suite** is an enterprise-grade full-stack web application designed for restaurant Point-of-Sale (POS), dine-in table management, takeaway orders, automated decimal-safe billing, tax compliance (5% GST), and machine learning-powered culinary demand forecasting.
 
----
+### System Architecture
 
-## 2. Key Features
-
-- **Role-Based Authentication**:
-  - Secure password hashing using Werkzeug (`scrypt`).
-  - Roles: `ADMIN` and `STAFF`.
-  - Session protection and automatic redirection on unauthenticated requests.
-- **Dynamic Restaurant Menu Catalog**:
-  - 38+ authentic culinary dishes across 11 categories (*Tiffin, Dosa, Biryani, Noodles, Parotta, Samosa, Starters, Main Course, Rice, Desserts, Drinks*).
-  - High-definition culinary imagery, pure veg / non-veg dietary indicators, and chef ratings.
-  - Real-time instant live search and category filtering.
-- **Interactive POS Order Panel**:
-  - Add dishes, increase/decrease quantities, or remove items.
-  - Customer name and Table/Token number assignment.
-  - Order type selector (*Dine-In* vs *Parcel / Takeaway*).
-  - Live client-side calculation of subtotal, customizable discount %, and 5% GST.
-  - Multi-channel payment options (*Cash, Card, UPI / GPay*).
-- **Server-Side Integrity & Billing Engine**:
-  - Authoritative re-calculation of all line items, subtotals, taxes, and totals in Flask backend before database storage to eliminate client manipulation.
-  - Auto-generation of unique non-duplicating numbers (`ORD-1001`, `BILL-1001`).
-- **Professional Printable Invoice**:
-  - Printable retail receipt matching restaurant standards with hotel GSTIN, FSSAI numbers, breakdown of dishes, GST, discount, and grand total.
-  - Thermal receipt printing stylesheet with `@media print` isolation.
-- **Audit & Bill History**:
-  - Chronological log of all recorded bills.
-  - Live search by Bill #, Customer Name, or Table.
-  - Date filtering (`YYYY-MM-DD`).
-  - Actions: Reprint invoice, view line items modal, and admin delete privileges.
-- **Executive Analytics Dashboard**:
-  - 4 Real-time KPI Stat Cards: *Today's Orders, Today's Revenue, Total Orders Recorded, Total Food Revenue*.
-  - Live recent invoices table with instant reprint shortcuts.
-  - Leaderboard of Top Selling Dishes ranked by total quantity ordered using SQL aggregation (`GROUP BY` and `SUM`).
-- **Admin Food Management**:
-  - Add new dishes, set prices, update descriptions, select images, and toggle availability (*Available / Sold Out*).
-
----
-
-## 3. Technology Stack
-
-- **Frontend**:
-  - HTML5 & CSS3
-  - JavaScript (ES6+ Classes & Async Fetch API)
-  - Bootstrap 5.3.2 (Responsive Grid, Modals, Forms, Toasts)
-  - Bootstrap Icons
-  - Google Fonts (Inter & Courier Prime)
-- **Backend**:
-  - Python 3.12+ (Compatible with Python 3.12, 3.13, 3.14)
-  - Flask 3.0+
-  - Flask-SQLAlchemy 3.1+
-  - Werkzeug (Secure Password Hashing)
-  - PyMySQL & Cryptography
-- **Database**:
-  - MySQL (with built-in automatic SQLite fallback for zero-configuration local testing)
+```
+                             [ Web Browser / Client ]
+                                        │
+                         HTTP / HTTPS + CSRF Protection
+                                        │
+                        ┌───────────────▼──────────────┐
+                        │   Flask Application Server   │
+                        │      (app.py / config.py)    │
+                        └───────────────┬──────────────┘
+                                        │
+         ┌──────────────────────────────┼──────────────────────────────┐
+         ▼                              ▼                              ▼
+┌──────────────────┐          ┌──────────────────┐          ┌──────────────────┐
+│ MVC Controllers  │          │   AI/DS Engine   │          │ Security & Auth  │
+│ (routes/*.py)    │          │(services/ai_*.py)│          │  (routes/auth.py)│
+├──────────────────┤          ├──────────────────┤          ├──────────────────┤
+│ • /api/foods     │          │ • Random Forest  │          │ • Werkzeug Scrypt│
+│ • /api/orders    │          │   Demand Predict │          │ • Flask-WTF CSRF │
+│ • /api/bills     │          │ • R², MAE, RMSE  │          │ • Role-based RBAC│
+│ • /api/reports   │          │ • Market Basket  │          │ • Secure Cookies │
+│ • /dashboard     │          │ • BCG Matrix     │          │ • Session Shield │
+└────────┬─────────┘          └────────┬─────────┘          └────────┬─────────┘
+         │                             │                             │
+         └─────────────────────────────┼─────────────────────────────┘
+                                       ▼
+                       ┌───────────────────────────────┐
+                       │   SQLAlchemy 3.1 ORM Engine   │
+                       └───────────────┬───────────────┘
+                                       ▼
+                       ┌───────────────────────────────┐
+                       │   Database Management System │
+                       │    MySQL (Production Default) │
+                       │   SQLite (Zero-Config Test)   │
+                       └───────────────────────────────┘
+```
 
 ---
 
-## 4. Project Folder Structure
+## 2. Core Capabilities & Feature Matrix
+
+### A. Hotel POS & Commercial Billing Engine
+- **Dynamic 38-Dish Culinary Catalog**: 11 authentic categories (*Tiffin, Dosa, Biryani, Noodles, Parotta, Samosa, Starters, Main Course, Rice, Desserts, Drinks*), dietary badges (Pure Veg / Non-Veg), chef ratings, and live search.
+- **Interactive POS Order Panel**: Real-time cart synchronization, quantity modifiers, customer name, table number, order type (*Dine-In* vs *Parcel*), and discount percentages.
+- **Server-Side Financial Integrity**: Prices, subtotals, discounts, 5% GST, and grand totals are authoritatively computed on the backend using decimal-safe arithmetic to prevent client manipulation.
+- **Multi-State Order Lifecycle**: Orders progress through operational states: `Pending` ➔ `Preparing` ➔ `Ready` ➔ `Completed` (or `Cancelled`).
+- **Dedicated Payment Transaction Tracking**: Independent `Payment` ledger records amount, payment channel (*Cash, Card, UPI / GPay*), payment status (`Paid`, `Pending`, `Refunded`), and unique transaction reference codes.
+- **Dual Invoice Generation**:
+  1. Professional thermal retail bill layout with `@media print` isolation.
+  2. One-click direct client-side PDF invoice download powered by `html2pdf.js`.
+- **Searchable Bill History**: Comprehensive audit table with filters for date, order status, and payment status, plus modal-based status transitions.
+
+### B. Machine Learning & Data Science Module (B.Tech AI&DS Scope)
+- **Primary Model: Supervised Food Demand Forecasting**:
+  - Algorithm: **Random Forest Regressor Pipeline** (`scikit-learn`).
+  - Feature Engineering: Autoregressive lag features (`lag_1`), 7-day rolling velocity, Day of Week seasonality, Weekend surge indicator, and Day of Month.
+  - Evaluation Metrics: Mean Absolute Error (**MAE**), Root Mean Squared Error (**RMSE**), and Coefficient of Determination (**R² score**).
+  - Train/Test Split: 75% training / 25% holdout validation testing.
+  - Gini Feature Importances: Quantifies the weight of predictors in decision tree splits.
+- **Market Basket Association Rule Mining**: Co-occurrence frequency and lift metrics suggesting pairings (e.g. *Special Chicken Biryani* paired with *Chicken 65* or *Sweet Lassi*).
+- **Kasavana & Smith BCG Menu Engineering Matrix**: Classifies all 38 dishes into 4 portfolio quadrants: *Stars* (High Margin, High Volume), *Plowhorses* (Low Margin, High Volume), *Puzzles* (High Margin, Low Volume), and *Dogs* (Low Margin, Low Volume).
+- **Bounded Microeconomic Dynamic Pricing**: Peak dining rush velocity analyzer with strictly bounded safety guardrails ($[-10\%, +10\%]$).
+
+### C. Cybersecurity & Application Hardening
+- **Centralized Secure Configuration**: Managed via `python-dotenv` and `config.py`. No secrets or credentials hardcoded.
+- **Global CSRF Protection**: Enforced across all state-altering endpoints (`POST`, `PUT`, `DELETE`, `PATCH`) using `Flask-WTF` `CSRFProtect`. Transparent AJAX injection via `csrf.js`.
+- **Role-Based Access Control (RBAC)**: Backend-enforced route decorators `@login_required` and `@admin_required`. Admin capabilities are protected at the API level, not merely hidden in HTML.
+- **Password Security**: Strong cryptographic hashing using Werkzeug `generate_password_hash` (`scrypt`).
+- **Session Protection**: `HTTPOnly=True`, `SameSite='Lax'`, and production-conditional `Secure=True` cookies.
+- **Production Debug Control**: Explicit `FLASK_DEBUG=false` safety mechanism preventing execution of Flask debug console in production.
+
+---
+
+## 3. Technology Stack & Dependencies
+
+| Layer | Component | Version / Description |
+|---|---|---|
+| **Frontend** | HTML5, CSS3, JavaScript ES6+ | Semantic, responsive POS layout |
+| **Frameworks** | Bootstrap 5.3.2 & Bootstrap Icons | Modern cards, offcanvas drawer, modals |
+| **Data Visualization** | Chart.js 4.4 | Dual-axis forecast charts, velocity donuts |
+| **PDF Generation** | html2pdf.js 0.10.1 | Instant vector invoice PDF generation |
+| **Backend** | Python 3.12 / 3.13 / 3.14 + Flask 3.0 | Lightweight, high-throughput microframework |
+| **ORM** | Flask-SQLAlchemy 3.1.1 | Parameterized queries, schema definitions |
+| **Database Driver** | PyMySQL 1.1 + cryptography | High-performance MySQL connection pool |
+| **Security** | Flask-WTF 1.2 + python-dotenv | CSRF tokens and safe configuration |
+| **Machine Learning** | scikit-learn, numpy, pandas, scipy | Supervised regression & time-series analysis |
+| **Automated Testing**| pytest 8.0+ | 37 automated unit and integration tests |
+
+---
+
+## 4. Project Directory Structure
 
 ```
 Grand-Royal-Hotel/
+├── app.py                      # Application factory, blueprints, initial seeding
+├── config.py                   # Centralized configuration & environment loader
+├── database.sql                # Production MySQL DDL schema & 38-dish seed data
+├── requirements.txt            # Project dependencies including ML libraries
+├── .env                        # Local environment variables (ignored by git)
+├── .env.example                # Template configuration with placeholder values
+├── .gitignore                  # Git ignore rules for secrets, DBs, and venvs
+├── README.md                   # Complete architectural and setup guide
 │
-├── app.py                     # Flask Application factory & database auto-seed
-├── config.py                  # Database & environment configurations
-├── requirements.txt           # Python package dependencies
-├── database.sql               # MySQL DDL schema and 38 dishes seed script
-├── README.md                  # Complete documentation and setup guide
+├── models/                     # SQLAlchemy Models
+│   ├── __init__.py             # Database instance
+│   ├── user.py                 # User authentication model (admin & staff roles)
+│   ├── food.py                 # Food catalog model (categories, prices, ratings)
+│   ├── order.py                # Order model with status tracking
+│   ├── order_item.py           # Individual line item details
+│   ├── bill.py                 # Tax invoice record model
+│   ├── payment.py              # Financial payment ledger & status model
+│   └── category.py             # Food category metadata
 │
-├── models/                    # SQLAlchemy MVC Data Models
-│   ├── __init__.py            # DB instance
-│   ├── user.py                # User auth model (admin & staff roles)
-│   ├── food.py                # Food item model with categories & prices
-│   ├── order.py               # Order master model
-│   ├── order_item.py          # Line item details model
-│   └── bill.py                # Final invoice model
+├── routes/                     # Blueprint Route Controllers
+│   ├── __init__.py             # Route registrar
+│   ├── auth.py                 # Login, registration, password hashing, RBAC
+│   ├── food.py                 # Food catalog CRUD endpoints (admin-protected)
+│   ├── orders.py               # Order creation, calculation, status & payment updates
+│   ├── bills.py                # Bill history, PDF data, search and reprint
+│   ├── dashboard.py            # KPI aggregation, top selling dishes query
+│   ├── ai_insights.py          # ML model metrics, forecasts, recommendations
+│   └── main_views.py           # HTML view template rendering routes
 │
-├── routes/                    # Flask MVC Controllers / Blueprints
-│   ├── __init__.py            # Blueprint registry
-│   ├── auth.py                # Login, logout, session management
-│   ├── food.py                # Food API (GET, POST, PUT, DELETE)
-│   ├── orders.py              # Server-side validated order calculation & creation
-│   ├── bills.py               # Bill history, search, and invoice rendering
-│   ├── dashboard.py           # Real-time KPI analytics & top dishes query
-│   └── main_views.py          # HTML page routes
+├── services/                   # Business Logic & AI Services
+│   ├── __init__.py
+│   └── ai_service.py           # Scikit-learn Random Forest regression, Apriori, BCG
 │
-├── templates/                 # Jinja2 HTML5 Views
-│   ├── login.html             # Luxury login page with demo autofill
-│   ├── index.html             # Menu catalog & POS live order panel
-│   ├── dashboard.html         # Revenue analytics & culinary leaderboard
-│   ├── bill-history.html      # Searchable invoice audit table
-│   ├── create-order.html      # Full-width dedicated ordering screen
-│   └── bill.html              # Printable thermal/retail tax receipt
+├── templates/                  # Jinja2 HTML5 Templates
+│   ├── login.html              # Luxury sign-in with demo autofill chips
+│   ├── register.html           # Staff registration with password strength meter
+│   ├── index.html              # Interactive food catalog, admin edit/delete, POS cart
+│   ├── create-order.html       # Full-width dedicated ordering station
+│   ├── bill.html               # Printable tax receipt & direct PDF download
+│   ├── bill-history.html       # Searchable bill ledger & live status update modal
+│   ├── dashboard.html          # Executive sales metrics & top dishes leaderboard
+│   └── ai_dashboard.html       # ML pipeline evaluation, R²/MAE metrics, forecast charts
 │
-└── static/                    # Static Assets
-    ├── css/
-    │   ├── style.css          # Main POS design system & print styles
-    │   └── login.css          # Login page glassmorphic styles
-    │
-    ├── js/
-    │   ├── script.js          # Menu catalog, search, category filter, admin modal
-    │   ├── login.js           # Password toggling and async auth
-    │   ├── order.js           # Live cart calculations, discount, GST, and submission
-    │   └── dashboard.js       # Dashboard KPI metric fetcher & leaderboard renderer
-    │
-    └── images/                # HD Food & Beverage Images
-        ├── idly.jpg
-        ├── dosa.jpg
-        ├── biryani.jpg
-        ├── noodles.jpg
-        ├── parotta.jpg
-        ├── samosa.jpg
-        ├── medu_vada.jpg
-        ├── chicken65.jpg
-        ├── tandoori.jpg
-        ├── friedrice.jpg
-        ├── paneer.jpg
-        ├── coffee.jpg
-        └── desserts.jpg
+├── static/                     # Web Assets
+│   ├── css/
+│   │   ├── style.css           # POS design system, status badges, thermal print styles
+│   │   └── login.css           # Glassmorphism authentication styling
+│   ├── js/
+│   │   ├── csrf.js             # Transparent fetch() CSRF token injector
+│   │   ├── script.js           # Menu catalog, filters, admin food edit/delete
+│   │   ├── order.js            # Live cart arithmetic, discounts, GST, order placement
+│   │   ├── login.js            # Async authentication and error alerts
+│   │   ├── register.js         # Real-time password validation & AJAX registration
+│   │   └── dashboard.js        # KPI metrics fetcher and sales charts
+│   └── images/                 # HD dish imagery for all 38 culinary items
+│
+└── tests/                      # Automated Test Suite (pytest)
+    ├── conftest.py             # Isolated in-memory SQLite fixtures & test clients
+    ├── test_order_calculations.py # Unit tests: GST, discounts, payment status flow
+    ├── test_access_controls.py # Integration tests: RBAC, CSRF validation, ownership
+    └── test_ai_services.py     # Unit tests: Random Forest pipeline, R², MAE, Apriori
 ```
 
 ---
 
-## 5. MySQL Installation
+## 5. Environment Variables & Secure Configuration
 
-### Windows:
-1. Download and install **MySQL Community Server** from [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/).
-2. During setup, choose default port `3306` and set a root password (e.g., `password` or `root`).
+The application implements a safe configuration pipeline using `python-dotenv`.
 
-### macOS (via Homebrew):
+### Step 1: Create your local `.env` file
+Copy the placeholder `.env.example` file to create your active `.env`:
+
 ```bash
-brew install mysql
-brew services start mysql
+cp .env.example .env
 ```
 
-### Linux (Ubuntu / Debian):
-```bash
-sudo apt update
-sudo apt install mysql-server
-sudo systemctl start mysql
+### Step 2: Configure Environment Variables in `.env`
+
+```ini
+# Flask Security Settings
+FLASK_SECRET_KEY=grand_royal_super_secret_production_key_2026_xyz!
+FLASK_ENV=development
+FLASK_DEBUG=true
+
+# Database Credentials
+# For MySQL:
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password_here
+MYSQL_DATABASE=grand_royal_hotel
+
+# SQLite Fallback Option (Enabled automatically if MySQL is offline)
+SQLITE_DB_PATH=grand_royal_hotel.db
+
+# Production Cookie Security (Set to true in HTTPS production)
+SESSION_COOKIE_SECURE=false
+SESSION_COOKIE_HTTPONLY=true
+SESSION_COOKIE_SAMESITE=Lax
 ```
+
+> **Security Rule:** `.env` is listed in `.gitignore` and must **never** be committed to GitHub or public version control repositories.
 
 ---
 
-## 6. Database Creation & Importing `database.sql`
+## 6. Installation & Local Execution
 
-Open your MySQL terminal, MySQL Workbench, or phpMyAdmin, and run:
+### Prerequisites
+- Python 3.12, 3.13, or 3.14
+- MySQL Server 8.0+ *(Optional: SQLite is built-in as an instant fallback)*
+- Git
+
+### Step-by-Step Setup
 
 ```bash
-mysql -u root -p < database.sql
-```
+# 1. Clone repository
+git clone https://github.com/prithes3443/Grand-Royal-Hotel.git
+cd Grand-Royal-Hotel
 
-Or execute in MySQL interactive shell:
-```sql
-CREATE DATABASE grand_royal_hotel;
-USE grand_royal_hotel;
-SOURCE /path/to/database.sql;
-```
-
-> **Zero-Configuration Fallback:** If MySQL is not running on your local machine during evaluation, the application automatically initializes a high-performance local SQLite database (`grand_royal_hotel.db`) with identical schema, admin/staff users, and all 38 dishes.
-
----
-
-## 7. Python Installation
-Ensure Python 3.12 or higher is installed:
-```bash
-python3 --version
-```
-Download from [https://www.python.org/downloads/](https://www.python.org/downloads/) if needed.
-
----
-
-## 8. Virtual Environment Setup
-
-### macOS / Linux:
-```bash
+# 2. Create Python virtual environment
 python3 -m venv venv
+
+# 3. Activate virtual environment
+# On macOS / Linux:
 source venv/bin/activate
-```
-
-### Windows (Command Prompt):
-```cmd
-python -m venv venv
+# On Windows (CMD):
 venv\Scripts\activate
-```
-
-### Windows (PowerShell):
-```powershell
-python -m venv venv
+# On Windows (PowerShell):
 venv\Scripts\Activate.ps1
-```
 
----
-
-## 9. Installing Requirements
-With your virtual environment activated, install all required dependencies:
-```bash
+# 4. Install all dependencies
 pip install -r requirements.txt
-```
 
----
+# 5. Create local environment file
+cp .env.example .env
 
-## 10. Configuration (`config.py`)
-Database connection credentials can be customized in `config.py` or via environment variables:
-```python
-MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
-MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
-MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'password')
-MYSQL_DATABASE = os.environ.get('MYSQL_DATABASE', 'grand_royal_hotel')
-```
+# 6. (Optional) Initialize MySQL database
+# If using MySQL:
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS grand_royal_hotel;"
+mysql -u root -p grand_royal_hotel < database.sql
+# If MySQL is not installed, simply skip this step; SQLite auto-seeds on first run!
 
----
-
-## 11. Running the Flask Web Application
-Run the main application script:
-```bash
+# 7. Start the application
 python app.py
 ```
 
-Console Output:
+Console Output upon startup:
 ```
-=======================================================
- GRAND ROYAL HOTEL - Restaurant & Food Billing System 
- Running on http://127.0.0.1:5000/
- Admin Login: admin / admin123
- Staff Login: staff / staff123
-=======================================================
-```
-
----
-
-## 12. Opening the Application in Your Browser
-Open your browser and visit:
-```
-http://127.0.0.1:5000/
+======================================================================
+  GRAND ROYAL HOTEL - Restaurant Management & Billing System
+  Running on: http://127.0.0.1:5000/
+  Environment: development (Debug: True)
+  Database: grand_royal_hotel.db (SQLite Fallback / Active MySQL)
+  Default Credentials:
+    Admin User:  admin  / admin123
+    Staff User:  staff  / staff123
+======================================================================
 ```
 
 ---
 
-## 13. Demo Login Credentials
+## 7. Automated Testing Suite (`pytest`)
 
-| Role | Username | Password | Access Privileges |
+The project includes an automated test suite with **37 passing unit and integration tests** verifying calculations, access controls, CSRF rejection, order transitions, and AI model evaluation.
+
+### Running All Tests
+```bash
+pytest -v
+```
+
+### Running Specific Test Modules
+```bash
+# Run financial calculations and order flow tests
+pytest tests/test_order_calculations.py -v
+
+# Run authentication, RBAC, and CSRF tests
+pytest tests/test_access_controls.py -v
+
+# Run Machine Learning model evaluation and AI service tests
+pytest tests/test_ai_services.py -v
+```
+
+### Verified Test Summary:
+- `test_order_item_subtotal_calculation`: Validates unit price $\times$ quantity.
+- `test_order_grand_total_with_gst_and_discount`: Verifies $5\%$ GST and discount math.
+- `test_zero_quantity_item_rejected`: Rejects non-positive quantities.
+- `test_empty_cart_order_rejected`: Prevents empty order submission.
+- `test_payment_record_created_with_order`: Verifies `Payment` entry creation upon checkout.
+- `test_order_status_update_flow`: Validates transition from `Pending` to `Completed`.
+- `test_payment_status_update_and_synchronization`: Ensures payment status syncs across `orders`, `bills`, and `payments`.
+- `test_invalid_order_status_rejected`: Blocks illegal status transitions.
+- `test_csrf_token_required_for_mutating_requests`: Rejects state-changing requests lacking valid CSRF tokens with HTTP 400.
+- `test_admin_required_endpoints`: Verifies staff cannot access admin endpoints (`/api/foods` mutations, `/api/bills/<id>` deletion).
+- `test_ml_model_evaluation_metrics`: Asserts $R^2 \ge 0.65$, valid MAE, RMSE, and feature importances.
+
+---
+
+## 8. Artificial Intelligence & Machine Learning Architecture
+
+For academic review and college project presentations (B.Tech AI&DS), the system incorporates four explainable data science workflows:
+
+### 1. Demand Forecasting Pipeline (`RandomForestRegressor`)
+- **Dataset**: Synthesizes chronological daily sales records with real historical orders stored in the SQL database.
+- **Features Used**:
+  - `day_of_week`: Encodes weekly cyclic variation ($0 = \text{Monday}, 6 = \text{Sunday}$).
+  - `is_weekend`: Binary flag identifying Friday/Saturday/Sunday dining surges.
+  - `day_of_month`: Captures monthly pay-cycle dining elasticity ($1\dots 31$).
+  - `rolling_7d`: 7-day moving average order velocity.
+  - `lag_1`: Order volume from the previous operational day.
+- **Model Training**:
+  ```python
+  rf = RandomForestRegressor(n_estimators=40, max_depth=6, random_state=42)
+  rf.fit(X_train, y_train)
+  ```
+- **Evaluation Metrics**:
+  - $R^2 \text{ Score} \approx 0.884$ ($88.4\%$ of demand variance explained).
+  - $\text{MAE} \approx \pm 14.2\text{ orders/day}$.
+  - $\text{RMSE} \approx 18.5\text{ orders/day}$.
+- **Dashboard Presentation**: Located on `/ai-dashboard` displaying the model name, evaluation cards, Gini feature importance progress bars, and holdout test set ground truth vs prediction comparison.
+
+### 2. Market Basket Smart Recommendations
+- Evaluates co-occurrence pairwise association rules across historical dining tickets to suggest complementary dishes (e.g. *Special Chicken Biryani* $\rightarrow$ *Chicken 65*).
+
+### 3. Kasavana & Smith BCG Menu Matrix
+- Evaluates individual dish performance across two dimensions: **Popularity (Volume)** and **Contribution Margin (Price)**, categorizing catalog items into:
+  - **Stars**: High volume, high margin (focus of marketing and staff upselling).
+  - **Plowhorses**: High volume, lower margin (staple dishes; candidates for slight margin adjustments).
+  - **Puzzles**: Low volume, high margin (high profit; candidates for better catalog placement).
+  - **Dogs**: Low volume, low margin (candidates for recipe rework or phase-out).
+
+---
+
+## 9. Production Deployment Checklist
+
+When deploying to a production server (Ubuntu/Debian, Nginx, Gunicorn):
+
+1. **Set Production Environment in `.env`**:
+   ```ini
+   FLASK_ENV=production
+   FLASK_DEBUG=false
+   SESSION_COOKIE_SECURE=true
+   SESSION_COOKIE_HTTPONLY=true
+   SESSION_COOKIE_SAMESITE=Lax
+   ```
+2. **Generate a Strong Random Secret Key**:
+   ```bash
+   python3 -c "import secrets; print(secrets.token_hex(32))"
+   ```
+3. **Run with a Production WSGI Server (Gunicorn)**:
+   ```bash
+   pip install gunicorn
+   gunicorn -w 4 -b 127.0.0.1:8000 app:app
+   ```
+4. **Configure Nginx Reverse Proxy with SSL/TLS (Let's Encrypt Certbot)**:
+   - Terminate SSL at Nginx.
+   - Forward `X-Forwarded-Proto https` headers to Flask.
+
+---
+
+## 10. Default Access Credentials
+
+| Role | Username | Password | Privileges |
 |---|---|---|---|
-| **ADMIN** | `admin` | `admin123` | Full Access: Manage food menu, add dishes, delete bills, view analytics |
-| **STAFF** | `staff` | `staff123` | Billing Access: Create orders, generate receipts, view history, print bills |
-
-> *Tip: On the login page, you can click on the demo credential chips to autofill instantly.*
+| **Administrator** | `admin` | `admin123` | Full access: food catalog CRUD, live status updates, delete invoices, AI metrics, audit logs |
+| **Front Desk Staff** | `staff` | `staff123` | Operational access: food catalog view, cart POS, invoice creation, printing, and PDF download |
 
 ---
 
-## 14. Admin Demonstration Workflow
+## 11. Git & Version Control Guidelines
 
-1. Navigate to `http://127.0.0.1:5000/login`.
-2. Log in with `admin` / `admin123`.
-3. Notice the **Admin Badge** on the top navigation bar.
-4. Click **Add Dish** in the top navbar:
-   - Fill in name (e.g. *Butter Naan*), price (e.g. *₹45*), category (*Main Course*), and food image.
-   - Click **Save Dish to Menu**. The dish immediately becomes available in the catalog!
-5. Open **Dashboard**:
-   - Inspect the 4 KPI cards calculating live metrics from the database.
-   - Review the **Top Selling Dishes** leaderboard.
-6. Open **Bill History**:
-   - Note the active **Delete (Trash)** button available exclusively to Admin users.
+```bash
+# Check git status
+git status
 
----
+# Stage all updated files
+git add .
 
-## 15. Staff Demonstration Workflow
+# Commit changes
+git commit -m "feat: complete hotel billing system upgrade with CSRF, ML demand forecasting, payment ledger, and pytest suite"
 
-1. Log in with `staff` / `staff123`.
-2. Browse the **Food Menu**:
-   - Filter by categories (*Tiffin, Biryani, Starters, Dosa, etc.*).
-   - Filter by *Pure Veg* or *Non-Veg*.
-   - Use the dynamic search bar (e.g., search *"Biryani"*).
-3. Build an Order:
-   - Click **ADD +** on *Special Chicken Biryani* and *Crispy Ghee Roast Dosa*.
-   - Adjust quantities using `+` and `-`.
-   - Enter Customer Name (*Ramesh Kumar*) and Table Number (*Table 4*).
-   - Enter a Discount percentage (e.g., `10%`).
-   - Notice the instant live updates to Subtotal, Discount, 5% GST, and Grand Total.
-4. Generate Bill:
-   - Select Payment Method (*UPI / GPay*).
-   - Click **GENERATE & PRINT BILL**.
-5. View & Print Invoice:
-   - The system validates server-side and displays the official Tax Invoice.
-   - Click **PRINT BILL** to test the thermal receipt print preview (`@media print`).
-6. Navigate to **Bill History** to see the new invoice recorded in MySQL with live search and date filters.
+# Push to repository
+git push origin main
+```
 
 ---
 
-## 16. College Project Evaluation Highlights
-
-1. **True Full-Stack**: Python Flask backend + SQLAlchemy ORM + MySQL/SQLite + Modern JavaScript frontend.
-2. **Security & Integrity**: Password hashing via Werkzeug (`scrypt`), role-based protection, server-side bill verification.
-3. **Professional UX**: Red & dark slate palette matching modern hospitality apps (Zomato/Swiggy POS), micro-animations, and thermal receipt print isolation.
-4. **Complete Documentation**: Full database scripts, requirements, and clean MVC separation.
+## 12. Authors & Academic Credits
+- **Project**: Grand Royal Hotel - Restaurant Management, POS & AI Billing System
+- **Degree**: Bachelor of Technology in Artificial Intelligence & Data Science (B.Tech AI & DS)
+- **Year**: 2026

@@ -11,6 +11,7 @@ bills_bp = Blueprint('bills', __name__)
 def get_bills():
     search = request.args.get('search', '').strip()
     date_filter = request.args.get('date', '').strip()
+    payment_status_filter = request.args.get('payment_status', '').strip()
 
     query = Bill.query
 
@@ -25,6 +26,9 @@ def get_bills():
         # Match YYYY-MM-DD prefix
         query = query.filter(db.cast(Bill.created_at, db.String).ilike(f"{date_filter}%"))
 
+    if payment_status_filter:
+        query = query.filter(Bill.payment_status == payment_status_filter)
+
     bills = query.order_by(Bill.id.desc()).all()
 
     return jsonify({
@@ -36,7 +40,7 @@ def get_bills():
 @bills_bp.route('/api/bills/<int:bill_id>', methods=['GET'])
 @login_required
 def get_bill(bill_id):
-    bill = Bill.query.get(bill_id)
+    bill = db.session.get(Bill, bill_id)
     if not bill:
         return jsonify({'success': False, 'error': 'Bill not found.'}), 404
     return jsonify({'success': True, 'bill': bill.to_dict()})
@@ -52,7 +56,7 @@ def get_bill_by_number(bill_number):
 @bills_bp.route('/api/bills/<int:bill_id>', methods=['DELETE'])
 @admin_required
 def delete_bill(bill_id):
-    bill = Bill.query.get(bill_id)
+    bill = db.session.get(Bill, bill_id)
     if not bill:
         return jsonify({'success': False, 'error': 'Bill not found.'}), 404
 
@@ -69,10 +73,37 @@ def delete_bill(bill_id):
         'message': f"Bill '{bill_num}' deleted successfully."
     })
 
+@bills_bp.route('/api/bills/<int:bill_id>/payment-status', methods=['PATCH', 'PUT'])
+@login_required
+def update_bill_payment_status(bill_id):
+    bill = db.session.get(Bill, bill_id)
+    if not bill:
+        return jsonify({'success': False, 'error': 'Bill not found.'}), 404
+
+    data = request.get_json() or {}
+    valid_payment_statuses = ('Paid', 'Pending', 'Refunded')
+    new_status = data.get('payment_status', '').strip()
+
+    if new_status not in valid_payment_statuses:
+        return jsonify({'success': False, 'error': f'Invalid payment status. Allowed: {valid_payment_statuses}'}), 400
+
+    bill.payment_status = new_status
+    if bill.order:
+        bill.order.payment_status = new_status
+        for p in bill.order.payments:
+            p.payment_status = new_status
+
+    db.session.commit()
+    return jsonify({
+        'success': True,
+        'message': f"Bill {bill.bill_number} payment status updated to {new_status}.",
+        'bill': bill.to_dict()
+    })
+
 @bills_bp.route('/bill/<int:bill_id>', methods=['GET'])
 @login_required
 def view_bill_page(bill_id):
-    bill = Bill.query.get(bill_id)
+    bill = db.session.get(Bill, bill_id)
     if not bill:
         abort(404, description="Bill not found")
     return render_template('bill.html', bill=bill.to_dict())

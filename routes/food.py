@@ -31,7 +31,7 @@ def get_foods():
 
 @food_bp.route('/api/foods/<int:food_id>', methods=['GET'])
 def get_food(food_id):
-    food = Food.query.get(food_id)
+    food = db.session.get(Food, food_id)
     if not food:
         return jsonify({'success': False, 'error': 'Food item not found'}), 404
     return jsonify({'success': True, 'food': food.to_dict()})
@@ -88,7 +88,7 @@ def create_food():
 @food_bp.route('/api/foods/<int:food_id>', methods=['PUT'])
 @admin_required
 def update_food(food_id):
-    food = Food.query.get(food_id)
+    food = db.session.get(Food, food_id)
     if not food:
         return jsonify({'success': False, 'error': 'Food item not found.'}), 404
 
@@ -131,7 +131,7 @@ def update_food(food_id):
 @food_bp.route('/api/foods/<int:food_id>', methods=['DELETE'])
 @admin_required
 def delete_food(food_id):
-    food = Food.query.get(food_id)
+    food = db.session.get(Food, food_id)
     if not food:
         return jsonify({'success': False, 'error': 'Food item not found.'}), 404
 

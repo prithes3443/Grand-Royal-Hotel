@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice {{ bill.bill_number }} | Grand Royal Hotel</title>
+    <!-- CSRF Token Meta -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +13,8 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- html2pdf.js for Client-side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Main Style -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
@@ -72,6 +76,9 @@
                 <a href="/bill-history" class="btn btn-outline-dark btn-sm">
                     <i class="bi bi-clock-history"></i> Bill History
                 </a>
+                <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" id="btnDownloadPdf" onclick="downloadInvoicePDF()">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> DOWNLOAD PDF
+                </button>
                 <button type="button" class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1" onclick="window.print()">
                     <i class="bi bi-printer-fill"></i> PRINT BILL
                 </button>
@@ -163,7 +170,8 @@
 
         <!-- Payment Mode & Footer -->
         <div class="small text-center">
-            <div class="mb-2"><strong>Payment Method:</strong> {{ bill.payment_method }}</div>
+            <div class="mb-1"><strong>Payment Method:</strong> {{ bill.payment_method }}</div>
+            <div class="mb-2"><strong>Payment Status:</strong> <span class="badge {{ 'bg-success' if bill.payment_status == 'Paid' else ('bg-warning text-dark' if bill.payment_status == 'Pending' else 'bg-danger') }}">{{ bill.payment_status }}</span></div>
             <div class="dash-line"></div>
             <div class="fw-bold mt-2">Thank you for dining with us!</div>
             <div>Please visit again.</div>
@@ -172,5 +180,32 @@
 
     </div>
 
+    <script>
+        function downloadInvoicePDF() {
+            const element = document.querySelector('.receipt-container');
+            const btn = document.getElementById('btnDownloadPdf');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating PDF...';
+
+            const opt = {
+                margin:       8,
+                filename:     'Grand_Royal_Hotel_Invoice_{{ bill.bill_number }}.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }).catch(err => {
+                console.error('PDF generation error:', err);
+                alert('Could not generate PDF directly. You can use Print Bill > Save as PDF instead.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+        }
+    </script>
 </body>
 </html>

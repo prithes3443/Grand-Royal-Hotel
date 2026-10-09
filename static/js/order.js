@@ -154,6 +154,54 @@ class OrderManager {
                 </button>
             </li>
         `).join('');
+
+        // Trigger AI Smart Recommendations
+        this.fetchAIRecommendations();
+    }
+
+    async fetchAIRecommendations() {
+        const section = document.getElementById('aiRecommendationsSection');
+        const list = document.getElementById('aiRecommendationsList');
+        if (!section || !list) return;
+
+        if (this.cart.length === 0) {
+            section.classList.add('d-none');
+            return;
+        }
+
+        try {
+            const foodIds = this.cart.map(i => i.food_id).join(',');
+            const res = await fetch(`/api/ai/recommendations?food_ids=${foodIds}&limit=3`);
+            const data = await res.json();
+
+            if (res.ok && data.success && data.recommendations && data.recommendations.length > 0) {
+                section.classList.remove('d-none');
+                list.innerHTML = data.recommendations.map(rec => `
+                    <div class="d-flex align-items-center justify-content-between p-1 px-2 border rounded bg-white small mb-1 shadow-sm">
+                        <div class="d-flex align-items-center gap-1 text-truncate" style="max-width: 180px;">
+                            <span class="veg-dot ${rec.food.food_type === 'Veg' ? 'veg' : 'non-veg'} me-1"></span>
+                            <span class="fw-bold text-dark text-truncate">${rec.food.name}</span>
+                            <span class="text-muted small">₹${rec.food.price.toFixed(0)}</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-ai-add"
+                            title="${rec.reason}">
+                            <i class="bi bi-plus"></i> Add
+                        </button>
+                    </div>
+                `).join('');
+
+                list.querySelectorAll('.btn-ai-add').forEach((btn, idx) => {
+                    const targetFood = data.recommendations[idx].food;
+                    btn.addEventListener('click', () => {
+                        this.addItem(targetFood);
+                    });
+                });
+            } else {
+                section.classList.add('d-none');
+            }
+        } catch (e) {
+            section.classList.add('d-none');
+        }
     }
 
     async submitOrder() {

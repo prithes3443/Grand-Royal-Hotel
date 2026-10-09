@@ -78,6 +78,9 @@ function renderFoods() {
         return;
     }
 
+    const userRole = document.body.dataset.userRole || 'guest';
+    const isAdmin = userRole === 'admin';
+
     grid.innerHTML = filtered.map(dish => {
         // Ensure image fallback
         const imgSrc = `/static/images/${dish.image || 'idly.jpg'}`;
@@ -120,6 +123,16 @@ function renderFoods() {
                                 <button type="button" class="btn btn-sm btn-secondary disabled" disabled>Sold Out</button>
                             `}
                         </div>
+                        ${isAdmin ? `
+                            <div class="admin-card-actions">
+                                <button type="button" class="btn-admin-edit" onclick="window.openEditFood(${dish.id})">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </button>
+                                <button type="button" class="btn-admin-delete" onclick="window.deleteFoodItem(${dish.id}, '${dish.name.replace(/'/g, "\\'")}')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -232,4 +245,117 @@ function bindAdminFoodEvents() {
             }
         });
     }
+
+    const editFoodForm = document.getElementById('adminEditFoodForm');
+    if (editFoodForm) {
+        editFoodForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dishId = document.getElementById('editFoodId').value;
+            const submitBtn = editFoodForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            const payload = {
+                name: document.getElementById('editFoodName').value.trim(),
+                category: document.getElementById('editFoodCategory').value.trim(),
+                price: parseFloat(document.getElementById('editFoodPrice').value),
+                food_type: document.getElementById('editFoodType').value,
+                description: document.getElementById('editFoodDesc').value.trim(),
+                image: document.getElementById('editFoodImage').value.trim() || 'idly.jpg',
+                rating: parseFloat(document.getElementById('editFoodRating').value) || 4.5,
+                is_available: document.getElementById('editFoodAvailable').checked
+            };
+
+            try {
+                const res = await fetch(`/api/foods/${dishId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    alert('Food item updated successfully!');
+                    const modalEl = document.getElementById('editFoodModal');
+                    if (modalEl) {
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+                    }
+                    loadFoodCatalog();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to update food'));
+                }
+            } catch (err) {
+                alert('Connection error with server.');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
 }
+
+// Open Edit Food Modal
+window.openEditFood = async function(dishId) {
+    try {
+        const res = await fetch(`/api/foods/${dishId}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.food) {
+            const f = data.food;
+            document.getElementById('editFoodId').value = f.id;
+            document.getElementById('editFoodName').value = f.name;
+            document.getElementById('editFoodCategory').value = f.category;
+            document.getElementById('editFoodPrice').value = f.price;
+            document.getElementById('editFoodType').value = f.food_type;
+            document.getElementById('editFoodRating').value = f.rating;
+            document.getElementById('editFoodDesc').value = f.description || '';
+            document.getElementById('editFoodAvailable').checked = Boolean(f.is_available);
+
+            const imgSelect = document.getElementById('editFoodImage');
+            if (imgSelect) {
+                let found = false;
+                for (let i = 0; i < imgSelect.options.length; i++) {
+                    if (imgSelect.options[i].value === f.image) {
+                        imgSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && f.image) {
+                    const opt = new Option(f.image, f.image, true, true);
+                    imgSelect.add(opt);
+                }
+            }
+
+            const modalEl = document.getElementById('editFoodModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }
+        } else {
+            alert('Could not load dish details: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error fetching dish details.');
+    }
+};
+
+// Delete Food Item
+window.deleteFoodItem = async function(dishId, dishName) {
+    if (!confirm(`Are you sure you want to delete "${dishName}"?\nThis dish will be permanently removed from the menu.`)) {
+        return;
+    }
+    try {
+        const res = await fetch(`/api/foods/${dishId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert(`"${dishName}" has been removed from the menu.`);
+            loadFoodCatalog();
+        } else {
+            alert('Failed to delete dish: ' + (data.error || 'Server error'));
+        }
+    } catch (err) {
+        alert('Network error while deleting dish.');
+    }
+};
+

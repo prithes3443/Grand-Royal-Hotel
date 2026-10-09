@@ -12,9 +12,13 @@ class Bill(db.Model):
     subtotal = db.Column(db.Float, nullable=False, default=0.0)
     discount = db.Column(db.Float, nullable=False, default=0.0)
     gst = db.Column(db.Float, nullable=False, default=0.0)
+    service_charge = db.Column(db.Float, nullable=False, default=0.0)
     grand_total = db.Column(db.Float, nullable=False, default=0.0)
     payment_method = db.Column(db.String(50), nullable=False, default='Cash')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    payment_status = db.Column(db.String(50), nullable=False, default='Paid')  # 'Paid', 'Pending', 'Refunded'
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+    payments = db.relationship('Payment', backref='bill', lazy=True)
     
     def to_dict(self):
         items_list = []
@@ -27,13 +31,16 @@ class Bill(db.Model):
             'order_id': self.order_id,
             'order_number': self.order.order_number if self.order else '',
             'order_type': self.order.order_type if self.order else 'Dine-In',
+            'order_status': self.order.status if self.order else 'Completed',
             'customer_name': self.customer_name,
             'table_number': self.table_number,
             'subtotal': round(float(self.subtotal), 2),
             'discount': round(float(self.discount), 2),
             'gst': round(float(self.gst), 2),
+            'service_charge': round(float(self.service_charge or 0.0), 2),
             'grand_total': round(float(self.grand_total), 2),
             'payment_method': self.payment_method,
+            'payment_status': self.payment_status or 'Paid',
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else '',
             'items': items_list,
             'order_items': items_list

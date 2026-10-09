@@ -7,6 +7,7 @@ CREATE DATABASE IF NOT EXISTS grand_royal_hotel;
 USE grand_royal_hotel;
 
 -- Drop tables in reverse order of foreign keys
+DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS bills;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
@@ -49,7 +50,8 @@ CREATE TABLE orders (
     gst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     grand_total DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL, -- 'Cash', 'Card', 'UPI / GPay'
-    status VARCHAR(50) DEFAULT 'Completed',
+    payment_status VARCHAR(50) NOT NULL DEFAULT 'Paid', -- 'Paid', 'Pending', 'Refunded'
+    status VARCHAR(50) DEFAULT 'Completed', -- 'Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled'
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -78,8 +80,23 @@ CREATE TABLE bills (
     gst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     grand_total DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
+    payment_status VARCHAR(50) NOT NULL DEFAULT 'Paid',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. PAYMENTS TABLE
+CREATE TABLE payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    bill_id INT,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL, -- 'Cash', 'Card', 'UPI / GPay'
+    payment_status VARCHAR(50) NOT NULL DEFAULT 'Paid', -- 'Paid', 'Pending', 'Refunded'
+    transaction_ref VARCHAR(100),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (bill_id) REFERENCES bills(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =======================================================
@@ -156,13 +173,16 @@ INSERT INTO foods (name, category, description, price, food_type, image, rating,
 ('Fresh Lime Soda', 'Drinks', 'Refreshing chilled sparkling soda mixed with fresh lemon juice and mint', 60.00, 'Veg', 'coffee.jpg', 4.6, 1),
 ('Mango Milkshake', 'Drinks', 'Thick creamy milkshake prepared with sweet Alphonso mango pulp and vanilla ice cream', 120.00, 'Veg', 'desserts.jpg', 4.8, 1);
 
--- Sample initial order and bill for immediate demonstration
-INSERT INTO orders (order_number, customer_name, table_number, order_type, subtotal, discount, gst, grand_total, payment_method, status, created_by) VALUES
-('ORD-1001', 'Ramesh Kumar', 'Table 4', 'Dine-In', 590.00, 59.00, 26.55, 557.55, 'UPI / GPay', 'Completed', 'staff');
+-- Sample initial order, bill, and payment for immediate demonstration
+INSERT INTO orders (order_number, customer_name, table_number, order_type, subtotal, discount, gst, grand_total, payment_method, payment_status, status, created_by) VALUES
+('ORD-1001', 'Ramesh Kumar', 'Table 4', 'Dine-In', 590.00, 59.00, 26.55, 557.55, 'UPI / GPay', 'Paid', 'Completed', 'staff');
 
 INSERT INTO order_items (order_id, food_id, quantity, price, total) VALUES
 (1, 9, 2, 240.00, 480.00),  -- 2x Special Chicken Biryani
 (1, 5, 1, 110.00, 110.00);  -- 1x Ghee Roast Dosa
 
-INSERT INTO bills (bill_number, order_id, customer_name, table_number, subtotal, discount, gst, grand_total, payment_method) VALUES
-('BILL-1001', 1, 'Ramesh Kumar', 'Table 4', 590.00, 59.00, 26.55, 557.55, 'UPI / GPay');
+INSERT INTO bills (bill_number, order_id, customer_name, table_number, subtotal, discount, gst, grand_total, payment_method, payment_status) VALUES
+('BILL-1001', 1, 'Ramesh Kumar', 'Table 4', 590.00, 59.00, 26.55, 557.55, 'UPI / GPay', 'Paid');
+
+INSERT INTO payments (order_id, bill_id, amount, payment_method, payment_status, transaction_ref) VALUES
+(1, 1, 557.55, 'UPI / GPay', 'Paid', 'UPI-TXN-1001-OK');

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Order | Grand Royal Hotel POS</title>
+    <!-- CSRF Token Meta -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +45,12 @@
                 <a href="/dashboard" class="nav-link-custom">
                     <i class="bi bi-graph-up-arrow"></i> Dashboard
                 </a>
+                <a href="/ai-dashboard" class="nav-link-custom">
+                    <i class="bi bi-cpu-fill"></i> AI Analytics
+                </a>
+                <a href="/reports" class="nav-link-custom">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                </a>
             </nav>
 
             <div class="d-flex align-items-center gap-2">
@@ -53,12 +61,46 @@
                         {{ session.get('role', 'staff') }}
                     </span>
                 </div>
-                <a href="/logout" class="btn btn-sm btn-outline-secondary" title="Logout">
+                <a href="/logout" class="btn btn-sm btn-outline-secondary d-none d-sm-inline-flex" title="Logout">
                     <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Logout</span>
                 </a>
+
+                <!-- Mobile Hamburger Button -->
+                <button class="btn btn-sm btn-outline-danger d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Offcanvas Navigation Drawer -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title d-flex align-items-center gap-2" id="mobileNavDrawerLabel">
+                <i class="bi bi-fire text-danger"></i> GRAND ROYAL HOTEL
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom">
+                <i class="bi bi-person-circle fs-3 text-secondary"></i>
+                <div>
+                    <div class="fw-bold text-dark">{{ session.get('full_name', 'Staff Member') }}</div>
+                    <span class="badge bg-danger-subtle text-danger">{{ session.get('role', 'staff') | upper }}</span>
+                </div>
+            </div>
+            <nav class="nav flex-column gap-2">
+                <a href="/" class="nav-link text-dark py-2 px-3 rounded"><i class="bi bi-grid-fill me-2 text-danger"></i> Food Menu</a>
+                <a href="/create-order" class="nav-link active bg-danger-subtle text-danger fw-bold py-2 px-3 rounded"><i class="bi bi-plus-circle-fill me-2 text-danger"></i> New Order</a>
+                <a href="/bill-history" class="nav-link text-dark py-2 px-3 rounded"><i class="bi bi-clock-history me-2 text-danger"></i> Bill History</a>
+                <a href="/dashboard" class="nav-link text-dark py-2 px-3 rounded"><i class="bi bi-graph-up-arrow me-2 text-danger"></i> Executive Dashboard</a>
+                <a href="/ai-dashboard" class="nav-link text-dark py-2 px-3 rounded"><i class="bi bi-cpu-fill me-2 text-danger"></i> AI & ML Analytics</a>
+                <a href="/reports" class="nav-link text-dark py-2 px-3 rounded"><i class="bi bi-file-earmark-bar-graph me-2 text-danger"></i> Sales Reports</a>
+                <hr class="my-2">
+                <a href="/logout" class="nav-link text-danger py-2 px-3 rounded"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+            </nav>
+        </div>
+    </div>
 
     <!-- CONTENT: Ordering Screen -->
     <main class="container-fluid px-lg-4 py-3">
@@ -201,6 +243,19 @@
                         <ul id="orderItemsContainer" class="order-items-list"></ul>
                     </div>
 
+                    <!-- AI Smart Pairing Section -->
+                    <div id="aiRecommendationsSection" class="p-2 border-top bg-light d-none">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="small fw-bold text-danger d-flex align-items-center gap-1">
+                                <i class="bi bi-stars"></i> AI Smart Pairings
+                            </span>
+                            <span class="badge bg-danger-subtle text-danger" style="font-size: 0.65rem;">Affinity Optimized</span>
+                        </div>
+                        <div id="aiRecommendationsList" class="d-flex flex-column gap-1">
+                            <!-- Populated dynamically via order.js -->
+                        </div>
+                    </div>
+
                     <div id="billingSummarySection" class="billing-summary opacity-50">
                         <div class="summary-row">
                             <span>Food Subtotal</span>
@@ -258,8 +313,25 @@
         </div>
     </main>
 
+    <!-- Global Responsive Footer -->
+    <footer class="footer-custom mt-auto py-3 bg-white border-top">
+        <div class="container-fluid px-lg-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold text-dark"><i class="bi bi-fire text-danger"></i> GRAND ROYAL HOTEL</span>
+                <span class="text-muted small">| Restaurant POS & Billing Suite v2.5</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 small text-muted">
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-circle-fill" style="font-size: 6px;"></i> System Online</span>
+                <span>Support: +91 98765 43210</span>
+                <span>© 2026 Grand Royal Hotel</span>
+            </div>
+        </div>
+    </footer>
+
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CSRF Helper JS -->
+    <script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
     <script src="{{ url_for('static', filename='js/order.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

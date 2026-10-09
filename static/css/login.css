@@ -203,3 +203,20 @@ body.login-body {
   background: var(--primary-light);
   border-color: var(--primary);
 }
+
+/* Password Strength Meter */
+.password-strength-bar {
+  height: 5px;
+  border-radius: 3px;
+  background-color: #e2e8f0;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.password-strength-fill {
+  height: 100%;
+  width: 0%;
+  transition: all 0.3s ease;
+}
+.strength-weak { width: 33%; background-color: #ef4444; }
+.strength-medium { width: 66%; background-color: #f59e0b; }
+.strength-strong { width: 100%; background-color: #10b981; }

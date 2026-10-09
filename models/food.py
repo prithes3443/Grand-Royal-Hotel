@@ -13,7 +13,7 @@ class Food(db.Model):
     image = db.Column(db.String(255), nullable=True)
     rating = db.Column(db.Float, default=4.5)
     is_available = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     
     order_items = db.relationship('OrderItem', backref='food', lazy=True, cascade='all, delete-orphan')
 
